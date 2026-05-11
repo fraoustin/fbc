@@ -1,0 +1,26 @@
+[project]
+name = "fbc"
+version = "0.0.1"
+description = "File Browser Client"
+readme = "README.md"
+authors = [{ name="fraoustin", email="fraoustin@gmail.com" }]
+license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
+requires-python = ">=3.7"
+dependencies = [
+    "requests"
+]
+
+[project.urls]
+Homepage = "https://github.com/fraoustin/fbc"
+Repository = "https://github.com/fraoustin/fbc"
+Issues = "https://github.com/fraoustin/fbc/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+fbc = "fbc.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["fbc*"]
