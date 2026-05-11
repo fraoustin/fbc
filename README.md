@@ -50,3 +50,4 @@ for push on pypi
 - add systrace in log file
 - add local command
 - add synchro functionnality
+- prompt dynamical
