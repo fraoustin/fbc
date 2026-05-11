@@ -2,11 +2,11 @@ import os
 import shlex
 import posixpath
 import inspect
-import util
-from filebrowser import FileBrowser
+from .util import Shell, command, cast_value, require_attr
+from .filebrowser import FileBrowser
 from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
 
-__VERSION__ = "0.0.1"
+__VERSION__ = "0.1.0"
 
 
 def build_url(url, username, password):
@@ -49,10 +49,10 @@ def parse_url(url):
     return parsed.scheme + "://", parsed.username or None, unquote(parsed.password) if parsed.password else None, target
 
 
-class FileBrowserShell(util.Shell):
+class FileBrowserShell(Shell):
 
     def __init__(self, engine=None, prompt='fb> '):
-        util.Shell.__init__(self, engine, prompt)
+        Shell.__init__(self, engine, prompt)
         self.iniprompt = prompt
         self.reset()
 
@@ -62,18 +62,18 @@ class FileBrowserShell(util.Shell):
         self.token = None
         self.prompt = self.iniprompt
 
-    @util.command()
+    @command()
     def set(self, attr, value=''):
         """
         config prompt, cert, token and verify_ssl
         """
         if attr not in ('cert', 'token', 'prompt', 'verify_ssl'):
             raise ValueError("attr not in this list: cert, token, prompt or verify_ssl")
-        if attr == 'verify_ssl' and util.cast_value(value) not in (True, False):
+        if attr == 'verify_ssl' and cast_value(value) not in (True, False):
             value = "false"
-        setattr(self, attr, util.cast_value(value))
+        setattr(self, attr, cast_value(value))
 
-    @util.command()
+    @command()
     def env(self):
         """
         display parameter shell
@@ -83,7 +83,7 @@ class FileBrowserShell(util.Shell):
         for key in env:
             print(f"{key:{ln+1}s}: {env[key]}")
 
-    @util.command(aliases=['connect',], group='Remote')
+    @command(aliases=['connect',], group='Remote')
     def login(self, url):
         """
         Connect remote
@@ -104,8 +104,8 @@ class FileBrowserShell(util.Shell):
             self.reset()
             raise e
 
-    @util.command(group='Remote')
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote')
+    @require_attr('engine', 'You are not connected !!!')
     def logout(self):
         """
         Disconnect remote
@@ -115,16 +115,16 @@ class FileBrowserShell(util.Shell):
         self.engine = None
         self.reset()
 
-    @util.command(group='Remote')
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote')
+    @require_attr('engine', 'You are not connected !!!')
     def pwd(self):
         """
         Display remote working directory
         """
         print(f"Remote working directory: {self.cwd}")
 
-    @util.command(group='Remote')
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote')
+    @require_attr('engine', 'You are not connected !!!')
     def cd(self, path="/"):
         """
         Change remote directory to 'path'
@@ -133,8 +133,8 @@ class FileBrowserShell(util.Shell):
         self.engine.list(resolved)
         self.cwd = resolved
 
-    @util.command(group='Remote')
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote')
+    @require_attr('engine', 'You are not connected !!!')
     def ls(self, path="."):
         """
         Display remote directory listing
@@ -150,8 +150,8 @@ class FileBrowserShell(util.Shell):
                 size = item.get("size", 0)
                 print(f"{size:>10}  {name}")
 
-    @util.command(group='Remote', aliases=['upload',])
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote', aliases=['upload',])
+    @require_attr('engine', 'You are not connected !!!')
     def put(self, local_file, remote_path="."):
         """
         Upload file
@@ -160,8 +160,8 @@ class FileBrowserShell(util.Shell):
         self.engine.upload(local_file, resolved)
         print("Upload OK")
 
-    @util.command(group='Remote', aliases=['download',])
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote', aliases=['download',])
+    @require_attr('engine', 'You are not connected !!!')
     def get(self, remote_file, local_file=None):
         """
         Download file
@@ -172,8 +172,8 @@ class FileBrowserShell(util.Shell):
         self.engine.download(resolved, local_file)
         print("Download OK")
 
-    @util.command(group='Remote', aliases=['del',])
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote', aliases=['del',])
+    @require_attr('engine', 'You are not connected !!!')
     def rm(self, path):
         """
         Delete remote file
@@ -182,8 +182,8 @@ class FileBrowserShell(util.Shell):
         self.engine.delete(resolved)
         print("Deleted")
 
-    @util.command(group='Remote')
-    @util.require_attr('engine', 'You are not connected !!!')
+    @command(group='Remote')
+    @require_attr('engine', 'You are not connected !!!')
     def mkdir(self, path):
         """
         Create remote directory

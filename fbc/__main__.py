@@ -2,9 +2,9 @@ import argparse
 import os
 import sys
 import logging
-from util import ConfigParser, cast_value, LOG_FORMAT, Subcommand, GenericModel
-from filebrowser import FileBrowser
-from shell import FileBrowserShell, build_url
+from .util import ConfigParser, cast_value, LOG_FORMAT, Subcommand, GenericModel
+from .filebrowser import FileBrowser
+from .shell import FileBrowserShell, build_url
 
 DEFAULT_CONFIG_PATH = os.path.join(os.getenv("APPDATA", os.path.expanduser("~")), ".fbc", "config.ini")
 DEFAULT_CONFIG = {
