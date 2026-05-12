@@ -6,7 +6,7 @@ from .util import Shell, command, cast_value, require_attr
 from .filebrowser import FileBrowser
 from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
 
-__VERSION__ = "0.1.1"
+__VERSION__ = "0.1.2"
 
 
 def build_url(url, username, password):

@@ -458,9 +458,8 @@ class Subcommand:
         if not config.has_section(f"{self.command}.{name}"):
             print(f"{self.command} category « {name} » doesn't exist")
             return 1
-
-        if field not in config[f"{self.command}.{name}"].keys():
-            valid = ", ".join(config[f"{self.command}.{name}"].keys())
+        if field not in config.options(f"{self.command}.{name}"):
+            valid = ", ".join(config.options(f"{self.command}.{name}"))
             print(f"Parameter « {field} » doesn't exist. Parameter checked : {valid}")
             return 1
 
