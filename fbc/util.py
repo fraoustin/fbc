@@ -93,6 +93,15 @@ class ColorFormatter(logging.Formatter):
 # manage Shell
 # =====================================
 
+def t(s):
+    frame = inspect.currentframe().f_back
+    context = frame.f_globals | frame.f_locals
+    for elt in dir(context['self']):
+        if elt not in ('prompt', '_prompt'):
+            context[elt] = getattr(context['self'], elt)
+    return s.format(**context)
+
+
 def require_attr(attr_name, msg='{attr_name} is None', **kws):
     def decorator(func):
         @wraps(func)
@@ -119,6 +128,17 @@ def command(name=None, aliases=None, group=''):
 
 
 class Shell:
+    COLORS = {
+        "cyan": "\033[36m",
+        "black": "\033[30m",
+        "green": "\033[32m",
+        "yellow": "\033[33m",
+        "red": "\033[31m",
+        "violet": "\033[35m",
+        "reset": "\033[0m",
+        "blue": "\033[34m",
+        "magenta": "\033[35m",
+    }
 
     def __init__(self, engine=None, prompt="> "):
         self.engine = engine
@@ -132,6 +152,19 @@ class Shell:
                 self.cmds[name] = attr
                 for alias in attr._command_aliases:
                     self.cmds[alias] = attr
+        for color in self.COLORS:
+            setattr(self, color, self.COLORS[color])
+
+    @property
+    def prompt(self):
+        try:
+            return t(self._prompt)
+        except Exception:
+            return '>'
+
+    @prompt.setter
+    def prompt(self, value):
+        self._prompt = value
 
     def _resolve_path(self, path):
         if not path:
@@ -188,7 +221,7 @@ class Shell:
     def run(self):
         while True:
             try:
-                cmdline = input(f"{self.prompt}").strip()
+                cmdline = input(self.prompt).strip()
                 if not cmdline:
                     continue
                 args = shlex.split(cmdline)

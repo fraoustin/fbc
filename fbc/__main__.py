@@ -4,7 +4,7 @@ import sys
 import logging
 from .util import ConfigParser, cast_value, LOG_FORMAT, Subcommand, GenericModel
 from .filebrowser import FileBrowser
-from .shell import FileBrowserShell, build_url
+from .shell import FileBrowserShell, build_url, __VERSION__
 
 DEFAULT_CONFIG_PATH = os.path.join(os.getenv("APPDATA", os.path.expanduser("~")), ".fbc", "config.ini")
 DEFAULT_CONFIG = {
@@ -14,12 +14,12 @@ DEFAULT_CONFIG = {
         "password": "******",
         "token": "None",
         "ssl": "false",
-        "prompt": "fb> ",
+        "prompt": "fbc> ",
         "cert": "None"
     },
     "default.global": {
         "not_save_default_value": "true",
-        "prompt": "fb> "
+        "prompt": "fbc> "
     }
 }
 
@@ -37,6 +37,7 @@ def check_config(config):
 def main():
     try:
         parser = argparse.ArgumentParser(description="Files Browser Console", exit_on_error=False)
+        parser.add_argument("--version", action="version", version=f"File Browser Client {__VERSION__}")
         parser.add_argument("--config", default=DEFAULT_CONFIG_PATH, help="configuration file")
         parser.add_argument("--log_level", choices=[logging.getLevelName(level) for level in sorted(set(logging._nameToLevel.values()))], default="INFO", help="log level")
         subparsers = parser.add_subparsers(dest="command")

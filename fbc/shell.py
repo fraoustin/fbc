@@ -6,7 +6,7 @@ from .util import Shell, command, cast_value, require_attr
 from .filebrowser import FileBrowser
 from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
 
-__VERSION__ = "0.1.0"
+__VERSION__ = "0.1.1"
 
 
 def build_url(url, username, password):
@@ -51,16 +51,17 @@ def parse_url(url):
 
 class FileBrowserShell(Shell):
 
-    def __init__(self, engine=None, prompt='fb> '):
+    def __init__(self, engine=None, prompt='fbc> '):
         Shell.__init__(self, engine, prompt)
         self.iniprompt = prompt
-        self.reset()
+        self._reset()
 
-    def reset(self):
+    def _reset(self):
         self.verify_ssl = True
         self.cert = None
         self.token = None
         self.prompt = self.iniprompt
+        self.scheme, self.username, self.host = '', '', ''
 
     @command()
     def set(self, attr, value=''):
@@ -100,8 +101,9 @@ class FileBrowserShell(Shell):
                 timeout=10,
             )
             self.engine = fb
+            self.scheme, self.username, self.host = scheme, username, host
         except Exception as e:
-            self.reset()
+            self._reset()
             raise e
 
     @command(group='Remote')
