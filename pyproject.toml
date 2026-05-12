@@ -1,6 +1,6 @@
 [project]
 name = "fbc"
-version = "0.1.2"
+version = "0.1.3"
 description = "File Browser Client"
 readme = "README.md"
 authors = [{ name="fraoustin", email="fraoustin@gmail.com" }]

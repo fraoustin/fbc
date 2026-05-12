@@ -142,7 +142,6 @@ class Shell:
 
     def __init__(self, engine=None, prompt="> "):
         self.engine = engine
-        self.cwd = "/"
         self.prompt = prompt
         self.cmds = {}
         for attr_name in dir(self):
@@ -165,20 +164,6 @@ class Shell:
     @prompt.setter
     def prompt(self, value):
         self._prompt = value
-
-    def _resolve_path(self, path):
-        if not path:
-            return self.cwd
-        # absolu
-        if path.startswith("/"):
-            resolved = path
-        # relatif
-        else:
-            resolved = posixpath.join(self.cwd, path)
-        resolved = posixpath.normpath(resolved)
-        if not resolved.startswith("/"):
-            resolved = "/" + resolved
-        return resolved
 
     @command(aliases=['bye', 'quit'])
     def exit(self):

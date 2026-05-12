@@ -2,11 +2,12 @@ import os
 import shlex
 import posixpath
 import inspect
+from pathlib import Path
 from .util import Shell, command, cast_value, require_attr
 from .filebrowser import FileBrowser
 from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
 
-__VERSION__ = "0.1.2"
+__VERSION__ = "0.1.3"
 
 
 def build_url(url, username, password):
@@ -55,6 +56,21 @@ class FileBrowserShell(Shell):
         Shell.__init__(self, engine, prompt)
         self.iniprompt = prompt
         self._reset()
+        self.lcwd = os.getcwd()
+
+    def _resolve_path(self, path, cwd):
+        if not path:
+            return cwd
+        # absolu
+        if path.startswith("/"):
+            resolved = path
+        # relatif
+        else:
+            resolved = posixpath.join(cwd, path)
+        resolved = posixpath.normpath(resolved)
+        if not resolved.startswith("/"):
+            resolved = "/" + resolved
+        return resolved
 
     def _reset(self):
         self.verify_ssl = True
@@ -62,6 +78,7 @@ class FileBrowserShell(Shell):
         self.token = None
         self.prompt = self.iniprompt
         self.scheme, self.username, self.host = '', '', ''
+        self.cwd = '/'
 
     @command()
     def set(self, attr, value=''):
@@ -131,7 +148,7 @@ class FileBrowserShell(Shell):
         """
         Change remote directory to 'path'
         """
-        resolved = self._resolve_path(path)
+        resolved = self._resolve_path(path, self.cwd)
         self.engine.list(resolved)
         self.cwd = resolved
 
@@ -141,7 +158,7 @@ class FileBrowserShell(Shell):
         """
         Display remote directory listing
         """
-        resolved = self._resolve_path(path)
+        resolved = self._resolve_path(path, self.cwd)
         data = self.engine.list(resolved)
         items = data.get("items", [])
         for item in items:
@@ -158,8 +175,8 @@ class FileBrowserShell(Shell):
         """
         Upload file
         """
-        resolved = self._resolve_path(remote_path)
-        self.engine.upload(local_file, resolved)
+        resolved = self._resolve_path(remote_path, self.cwd)
+        self.engine.upload(self._resolve_path(local_file, self.lcwd), resolved)
         print("Upload OK")
 
     @command(group='Remote', aliases=['download',])
@@ -168,10 +185,10 @@ class FileBrowserShell(Shell):
         """
         Download file
         """
-        resolved = self._resolve_path(remote_file)
+        resolved = self._resolve_path(remote_file, self.cwd)
         if local_file is None:
             local_file = os.path.basename(resolved)
-        self.engine.download(resolved, local_file)
+        self.engine.download(resolved, self._resolve_path(local_file, self.lcwd))
         print("Download OK")
 
     @command(group='Remote', aliases=['del',])
@@ -180,7 +197,7 @@ class FileBrowserShell(Shell):
         """
         Delete remote file
         """
-        resolved = self._resolve_path(path)
+        resolved = self._resolve_path(path, self.cwd)
         self.engine.delete(resolved)
         print("Deleted")
 
@@ -190,6 +207,36 @@ class FileBrowserShell(Shell):
         """
         Create remote directory
         """
-        resolved = self._resolve_path(path)
+        resolved = self._resolve_path(path, self.cwd)
         self.engine.mkdir(resolved)
         print("Directory created")
+
+    @command(group='Local')
+    def lpwd(self):
+        """
+        Display local working directory
+        """
+        print(f"Local working directory: {self.lcwd}")
+
+    @command(group='Local')
+    def lcd(self, path="/"):
+        """
+        Change local directory to 'path'
+        """
+        resolved = self._resolve_path(path, self.lcwd)
+        if Path(resolved).exists() and Path(resolved).is_dir():
+            self.lcwd = resolved
+            return
+        raise ValueError(f"{path} doesn't exist")
+
+    @command(group='Local')
+    def lls(self, path="."):
+        """
+        Display local directory listing
+        """
+        resolved = self._resolve_path(path, self.lcwd)
+        for path in [path for path in Path(resolved).iterdir() if path.is_dir()]:
+            print(f"[DIR]  {path.name}")
+        for path in [path for path in Path(resolved).iterdir() if path.is_file()]:
+            size = path.stat().st_size
+            print(f"{size:>10}  {path.name}")
