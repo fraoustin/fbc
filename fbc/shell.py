@@ -8,7 +8,7 @@ from .filebrowser import FileBrowser
 from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
 import readline
 
-__VERSION__ = "0.1.3"
+__VERSION__ = "0.1.4"
 
 
 def build_url(url, username, password):

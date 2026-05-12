@@ -144,6 +144,7 @@ class Shell:
         self.engine = engine
         self.prompt = prompt
         self.cmds = {}
+        self._historys = []
         for attr_name in dir(self):
             attr = getattr(self, attr_name)
             if callable(attr) and getattr(attr, "_is_command", False) is True:
@@ -203,10 +204,19 @@ class Shell:
         except Exception:
             print(__VERSION__)
 
+    @command()
+    def history(self):
+        """
+        Show history command
+        """
+        for history in self._historys:
+            print(history)
+
     def run(self):
         while True:
             try:
                 cmdline = input(self.prompt).strip()
+                self._historys.append(cmdline)
                 if not cmdline:
                     continue
                 args = shlex.split(cmdline)
@@ -232,6 +242,7 @@ class Shell:
                 print(f"{e}")
 
     def cmd(self, cmdline=''):
+        self._historys.append(cmdline)
         args = shlex.split(cmdline)
         cmd = args[0]
         if cmd in [cmd for cmd in self.cmds if self.cmds[cmd] == self.exit]:
