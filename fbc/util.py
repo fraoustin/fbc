@@ -229,7 +229,7 @@ class Shell:
             except KeyboardInterrupt:
                 print()
             except Exception as e:
-                print(f"Error {type(e)} : {e}")
+                print(f"{e}")
 
     def cmd(self, cmdline=''):
         args = shlex.split(cmdline)

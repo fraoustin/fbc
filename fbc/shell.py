@@ -6,6 +6,7 @@ from pathlib import Path
 from .util import Shell, command, cast_value, require_attr
 from .filebrowser import FileBrowser
 from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
+import readline
 
 __VERSION__ = "0.1.3"
 

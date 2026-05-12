@@ -65,6 +65,6 @@ for push on pypi
 
 ## todo
 
+- use https://github.com/prompt-toolkit/python-prompt-toolkit
 - add systrace in log file
-- add local command
 - add synchro functionnality

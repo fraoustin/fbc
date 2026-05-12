@@ -82,7 +82,7 @@ def main():
     config.read(args.config, encoding="utf-8")
     check_config(config)
     if args.command is None:
-        shell = FileBrowserShell()
+        shell = FileBrowserShell(prompt=config.get('default.global', 'prompt'))
         if 'url' in dir(args):
             url = args.url
             try:
