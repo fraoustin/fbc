@@ -8,4 +8,5 @@ __pycache__
 # ignore file swp vi
 *.swp
 pyenv
+.venv
 .bkp

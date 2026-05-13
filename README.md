@@ -50,6 +50,46 @@ You can use keyword:
 - cwd current path remote
 - connect information: username, host, scheme
 
+List of action in shell
+
+> help
+
+```
+Available commands
+?                                        Display this help text
+bye                                      Quit
+env                                      display parameter shell
+exit                                     Quit
+help                                     Display this help text
+history                                  Show history command
+quit                                     Quit
+set <attr> [value]                       config prompt, cert, token and verify_ssl
+version                                  Show FileBrowserClient version
+
+Local:
+! <args>                                 Execute 'command' in local shell
+lcd  [path]                              Change local directory to 'path'
+lcmd <args>                              Execute 'command' in local shell
+lls  [path]                              Display local directory listing
+lpwd                                     Display local working directory
+
+Remote:
+cd  [path]                               Change remote directory to 'path'
+connect <url>                            Connect remote
+del <path>                               Delete remote file
+download <remote_file> [local_file]      Download file
+get <remote_file> [local_file]           Download file
+login <url>                              Connect remote
+logout                                   Disconnect remote
+ls  [path]                               Display remote directory listing
+mkdir <path>                             Create remote directory
+put <local_file> [remote_path]           Upload file
+pwd                                      Display remote working directory
+rm <path>                                Delete remote file
+upload <local_file> [remote_path]        Upload file
+```
+
+
 ## development
 
 Before propose your merge

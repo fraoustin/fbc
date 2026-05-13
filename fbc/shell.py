@@ -7,8 +7,9 @@ from .util import Shell, command, cast_value, require_attr
 from .filebrowser import FileBrowser
 from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
 import readline
+import subprocess
 
-__VERSION__ = "0.1.4"
+__VERSION__ = "0.2.0"
 
 
 def build_url(url, username, password):
@@ -241,3 +242,13 @@ class FileBrowserShell(Shell):
         for path in [path for path in Path(resolved).iterdir() if path.is_file()]:
             size = path.stat().st_size
             print(f"{size:>10}  {path.name}")
+
+    @command(group='Local', aliases=['!',])
+    def lcmd(self, *args):
+        """
+        Execute 'command' in local shell
+        """
+        result = subprocess.run(args, capture_output=True, text=True)
+        for ret in [result.stdout, result.stderr]:
+            if len(ret) > 0:
+                print(ret)
