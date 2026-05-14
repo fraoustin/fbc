@@ -35,6 +35,17 @@ def check_config(config):
 
 
 def main():
+    class RedStderr:
+        RED = "\033[31m"
+        RESET = "\033[0m"
+
+        def write(self, message):
+            sys.__stderr__.write(f"{self.RED}{message}{self.RESET}")
+
+        def flush(self):
+            sys.__stderr__.flush()
+
+    sys.stderr = RedStderr()
     try:
         parser = argparse.ArgumentParser(description="Files Browser Console", exit_on_error=False)
         parser.add_argument("--version", action="version", version=f"File Browser Client {__VERSION__}")

@@ -108,5 +108,4 @@ for push on pypi
 - use https://github.com/prompt-toolkit/python-prompt-toolkit
 - add systrace in log file
 - add synchro functionnality
-- use file=sys.stderr for error shell
-- can color sys.stderr
+- manage in mc

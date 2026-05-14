@@ -226,20 +226,18 @@ class Shell:
                 if cmd in self.cmds.keys():
                     self.cmds[cmd](*args[1:])
                 else:
-                    print("Unknown command")
+                    print("Unknown command", file=sys.stderr)
                     self.help()
             except TypeError as e:
                 if cmd in self.cmds.keys():
-                    print("Error synthax")
-                    print(self.usage(cmd))
+                    print("Error synthax", file=sys.stderr)
+                    print(self.usage(cmd), file=sys.stderr)
                 else:
                     raise e
-            except ValueError as e:
-                print(e)
             except KeyboardInterrupt:
                 print()
             except Exception as e:
-                print(f"{e}")
+                print(e, file=sys.stderr)
 
     def cmd(self, cmdline=''):
         self._historys.append(cmdline)
