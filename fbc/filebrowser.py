@@ -94,7 +94,7 @@ class FileBrowser(requests.Session):
                 message,
                 status_code=response.status_code,
                 response=response
-            ) from e
+            )
         except requests.RequestException as e:
             raise FileBrowserError(
                 str(e),
@@ -141,9 +141,10 @@ class FileBrowser(requests.Session):
         url = f"{self.base_url}/api/resources{encoded}"
         try:
             r = self.get(url)
-        except FileBrowserError:
+        except FileBrowserError as e:
             if e.status_code == 404:
                 raise FileBrowserErrorNoPath(path)
+            raise e
         return r.json()
 
     def mkdir(self, path):
