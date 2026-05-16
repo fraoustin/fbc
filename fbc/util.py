@@ -93,6 +93,47 @@ class ColorFormatter(logging.Formatter):
 # manage Shell
 # =====================================
 
+try:
+    from prompt_toolkit import prompt
+    from prompt_toolkit.completion import Completer, Completion
+    from prompt_toolkit.formatted_text import HTML
+    from prompt_toolkit.completion import ThreadedCompleter
+    import shlex
+
+    class ShellCompleter(Completer):
+
+        def __init__(self, shell):
+            self.shell = shell
+
+        def get_completions(self, document, complete_event):
+            text = document.text_before_cursor
+            try:
+                args = shlex.split(text)
+            except ValueError:
+                return
+            if not args:
+                for cmd in self.shell.cmds.keys():
+                    yield Completion(cmd, start_position=0)
+                return
+            if len(args) == 1 and not text.endswith(" "):
+                current = args[0]
+
+                for cmd in self.shell.cmds.keys():
+                    if cmd.startswith(current):
+                        yield Completion(cmd, start_position=-len(current))
+                return
+            cmd = args[0]
+            if cmd in self.shell.cmds:
+                fn = self.shell.cmds[cmd]
+                prefix = args[-1] if len(args) > 1 else ""
+                if fn._command_completer is not None:
+                    yield from fn._command_completer.get_completions(self.shell, document, complete_event)
+                return
+
+    has_prompt_toolkit = True
+except:
+    has_prompt_toolkit = False
+
 def t(s):
     frame = inspect.currentframe().f_back
     context = frame.f_globals | frame.f_locals
@@ -113,7 +154,7 @@ def require_attr(attr_name, msg='{attr_name} is None', **kws):
     return decorator
 
 
-def command(name=None, aliases=None, group=''):
+def command(name=None, aliases=None, group='', completer=None):
     if aliases is None:
         aliases = []
 
@@ -122,6 +163,7 @@ def command(name=None, aliases=None, group=''):
         func._command_name = name or func.__name__
         func._command_aliases = aliases
         func._command_group = group
+        func._command_completer = completer
         return func
 
     return decorator
@@ -129,15 +171,24 @@ def command(name=None, aliases=None, group=''):
 
 class Shell:
     COLORS = {
-        "cyan": "\033[36m",
-        "black": "\033[30m",
-        "green": "\033[32m",
-        "yellow": "\033[33m",
-        "red": "\033[31m",
-        "violet": "\033[35m",
-        "reset": "\033[0m",
-        "blue": "\033[34m",
-        "magenta": "\033[35m",
+        "cyan": "\033[36m" if has_prompt_toolkit is False else "<ansicyan>",
+        "black": "\033[30m" if has_prompt_toolkit is False else "",
+        "green": "\033[32m" if has_prompt_toolkit is False else "<ansigreen>",
+        "yellow": "\033[33m" if has_prompt_toolkit is False else "<ansiyellow>",
+        "red": "\033[31m" if has_prompt_toolkit is False else "<ansired>",
+        "violet": "\033[35m" if has_prompt_toolkit is False else "",
+        "reset": "\033[0m" if has_prompt_toolkit is False else "",
+        "blue": "\033[34m" if has_prompt_toolkit is False else "<ansiblue>",
+        "magenta": "\033[35m" if has_prompt_toolkit is False else "<ansimagenta>",
+        "/cyan": "\033[0m" if has_prompt_toolkit is False else "</ansicyan>",
+        "/black": "\033[0m" if has_prompt_toolkit is False else "",
+        "/green": "\033[0m" if has_prompt_toolkit is False else "</ansigreen>",
+        "/yellow": "\033[0m" if has_prompt_toolkit is False else "</ansiyellow>",
+        "/red": "\033[0m" if has_prompt_toolkit is False else "</ansired>",
+        "/violet": "\033[0m" if has_prompt_toolkit is False else "",
+        "/reset": "\033[0m" if has_prompt_toolkit is False else "",
+        "/blue": "\033[0m" if has_prompt_toolkit is False else "</ansiblue>",
+        "/magenta": "\033[0m" if has_prompt_toolkit is False else "</ansimagenta>",
     }
 
     def __init__(self, engine=None, prompt="> "):
@@ -213,9 +264,14 @@ class Shell:
             print(history)
 
     def run(self):
+        if has_prompt_toolkit is True:
+            completer = ThreadedCompleter(ShellCompleter(self))
         while True:
             try:
-                cmdline = input(self.prompt).strip()
+                if has_prompt_toolkit is False:
+                    cmdline = input(self.prompt).strip()
+                else:
+                    cmdline = prompt(HTML(self.prompt), completer=completer).strip()                
                 self._historys.append(cmdline)
                 if not cmdline:
                     continue

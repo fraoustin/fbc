@@ -52,6 +52,51 @@ def parse_url(url):
     return parsed.scheme + "://", parsed.username or None, unquote(parsed.password) if parsed.password else None, target
 
 
+from prompt_toolkit.completion import Completion
+
+
+def path_completer(shell, document, complete_event, only_dirs=False):
+    text = document.text_before_cursor
+    prefix = text.split()[-1] if text.split() else ""
+    
+    #TODO
+
+    # si chemin vide → dossier courant
+    if prefix == "":
+        base = "."
+        typed = ""
+    else:
+        base = os.path.dirname(prefix)
+        typed = os.path.basename(prefix)
+
+        if base == "":
+            base = "."
+
+    try:
+        entries = os.listdir(base)
+    except (FileNotFoundError, PermissionError):
+        return
+
+    for name in entries:
+        full_path = os.path.join(base, name)
+
+        # filtre prefix
+        if not name.startswith(typed):
+            continue
+
+        # filtre dossiers uniquement
+        if only_dirs and not os.path.isdir(full_path):
+            continue
+
+        suffix = "/" if os.path.isdir(full_path) else ""
+
+        yield Completion(
+            name + suffix,
+            start_position=-len(typed),
+            display=name + suffix
+        )
+
+
 class FileBrowserShell(Shell):
 
     def __init__(self, engine=None, prompt='fbc> '):
