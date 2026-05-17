@@ -89,6 +89,7 @@ rm <path>                                Delete remote file
 upload <local_file> [remote_path]        Upload file
 ```
 
+You can use "tab" for complementation help
 
 ## development
 
@@ -105,7 +106,7 @@ for push on pypi
 
 ## todo
 
-- use https://github.com/prompt-toolkit/python-prompt-toolkit
 - add systrace in log file
 - add synchro functionnality
-- manage in mc
+- manage upload and download dir and path*
+- add visual for up and download

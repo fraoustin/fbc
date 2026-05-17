@@ -94,7 +94,7 @@ class ColorFormatter(logging.Formatter):
 # =====================================
 
 try:
-    from prompt_toolkit import prompt
+    from prompt_toolkit import prompt, PromptSession
     from prompt_toolkit.completion import Completer, Completion
     from prompt_toolkit.formatted_text import HTML
     from prompt_toolkit.completion import ThreadedCompleter
@@ -127,12 +127,13 @@ try:
                 fn = self.shell.cmds[cmd]
                 prefix = args[-1] if len(args) > 1 else ""
                 if fn._command_completer is not None:
-                    yield from fn._command_completer.get_completions(self.shell, document, complete_event)
+                    yield from fn._command_completer(self.shell, prefix)
                 return
 
     has_prompt_toolkit = True
-except:
+except Exception:
     has_prompt_toolkit = False
+
 
 def t(s):
     frame = inspect.currentframe().f_back
@@ -266,12 +267,13 @@ class Shell:
     def run(self):
         if has_prompt_toolkit is True:
             completer = ThreadedCompleter(ShellCompleter(self))
+            session = PromptSession()
         while True:
             try:
                 if has_prompt_toolkit is False:
                     cmdline = input(self.prompt).strip()
                 else:
-                    cmdline = prompt(HTML(self.prompt), completer=completer).strip()                
+                    cmdline = session.prompt(HTML(self.prompt), completer=completer).strip()
                 self._historys.append(cmdline)
                 if not cmdline:
                     continue
