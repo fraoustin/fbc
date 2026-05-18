@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, quote, unquote, urlparse, urlunparse
 import readline
 import subprocess
 
-__VERSION__ = "0.3.0"
+__VERSION__ = "0.3.1"
 
 
 def build_url(url, username, password):

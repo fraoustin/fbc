@@ -1,13 +1,14 @@
 [project]
 name = "fbc"
-version = "0.3.0"
+version = "0.3.1"
 description = "File Browser Client"
 readme = "README.md"
 authors = [{ name="fraoustin", email="fraoustin@gmail.com" }]
 license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
 requires-python = ">=3.7"
 dependencies = [
-    "requests"
+    "requests",
+    "prompt_toolkit"
 ]
 
 [project.urls]
