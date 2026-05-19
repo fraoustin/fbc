@@ -41,7 +41,7 @@ connection
 You can change your prompt with dynamic value.
 
 > fbc <name_connection>
-> fbc> set prompt "{red}{username}{reset}@{blue}{host}{reset}:{green}{cwd}{reset} "
+> fbc> set prompt "{cyan}(fbc){/cyan}{red}{username}{/red}@{blue}{host}{/blue}:{green}{cwd}{/green}{reset} "
 > user@tutu.fr:/
 
 You can use keyword:
