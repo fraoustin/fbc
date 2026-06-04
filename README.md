@@ -22,27 +22,34 @@ add shorcut for connection
 
 view or change parameter
 
-> fbc defaults
-> fbc default show global
-> fbc default set global prompt ">>>"
+```
+fbc defaults
+fbc default show global
+fbc default set global prompt ">>>"
+```
 
 add or change connection
 
-> fbc servers
-> fbc server show <name_connection>
-> fbc server set <name_connection> ssl true
+```
+fbc servers
+fbc server show <name_connection>
+fbc server set <name_connection> ssl true
+```
 
 connection
 
-> fbc http://<username>@<password>:<domain of filebrowser>.com
-> fbc <name_connection>
-
+```
+fbc http://<username>@<password>:<domain of filebrowser>.com
+fbc <name_connection>
+```
 
 You can change your prompt with dynamic value.
 
-> fbc <name_connection>
-> fbc> set prompt "{cyan}(fbc){/cyan}{red}{username}{/red}@{blue}{host}{/blue}:{green}{cwd}{/green}{reset} "
-> user@tutu.fr:/
+```
+fbc <name_connection>
+fbc> set prompt "{cyan}(fbc){/cyan}{red}{username}{/red}@{blue}{host}{/blue}:{green}{cwd}{/green}{reset} "
+user@tutu.fr:/
+```
 
 You can use keyword:
 
